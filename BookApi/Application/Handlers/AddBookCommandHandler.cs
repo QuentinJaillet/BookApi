@@ -1,4 +1,5 @@
 using BookApi.Application.Commands;
+using BookApi.Infrastructure.Repositories.Interfaces;
 using BookApi.Models;
 using MediatR;
 
@@ -6,7 +7,14 @@ namespace BookApi.Application.Handlers;
 
 public class AddBookCommandHandler : IRequestHandler<AddBookCommand, Book>
 {
-    public Task<Book> Handle(AddBookCommand request, CancellationToken cancellationToken)
+    private readonly IBookRepository _bookRepository;
+
+    public AddBookCommandHandler(IBookRepository bookRepository)
+    {
+        _bookRepository = bookRepository;
+    }
+
+    public async Task<Book> Handle(AddBookCommand request, CancellationToken cancellationToken)
     {
         var book = new Book
         {
@@ -21,6 +29,6 @@ public class AddBookCommandHandler : IRequestHandler<AddBookCommand, Book>
             Price = request.Price
         };
 
-        return Task.FromResult(book);
+        return await _bookRepository.AddAsync(book).ConfigureAwait(false);
     }
 }

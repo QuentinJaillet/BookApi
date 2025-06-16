@@ -1,12 +1,21 @@
 using BookApi.Application.Commands;
 using BookApi.Application.Queries;
+using BookApi.Infrastructure.Data;
+using BookApi.Infrastructure.Repositories;
+using BookApi.Infrastructure.Repositories.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddDbContext<BookDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=books.db"));
+
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
