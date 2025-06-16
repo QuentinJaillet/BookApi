@@ -43,6 +43,12 @@ app.MapGet("/api/books", async (IMediator mediator) =>
     return Results.Ok(books);
 });
 
+app.MapGet("/api/books/{isbn}", async (string isbn, IMediator mediator) =>
+{
+    var book = await mediator.Send(new GetBookByIsbnQuery { ISBN = isbn });
+    return book is not null ? Results.Ok(book) : Results.NotFound();
+});
+
 app.MapPost("/api/books", async (AddBookCommand command, IMediator mediator) =>
 {
     var book = await mediator.Send(command);
