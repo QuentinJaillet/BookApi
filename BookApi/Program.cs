@@ -1,3 +1,4 @@
+using BookApi.Application.Commands;
 using BookApi.Application.Queries;
 using MediatR;
 using Prometheus;
@@ -31,6 +32,12 @@ app.MapGet("/api/books", async (IMediator mediator) =>
 {
     var books = await mediator.Send(new BooksQuery());
     return Results.Ok(books);
+});
+
+app.MapPost("/api/books", async (AddBookCommand command, IMediator mediator) =>
+{
+    var book = await mediator.Send(command);
+    return Results.Created($"/api/books/{book.ISBN}", book);
 });
 
 // création d'une méthode HEAD
