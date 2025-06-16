@@ -49,6 +49,12 @@ app.MapPost("/api/books", async (AddBookCommand command, IMediator mediator) =>
     return Results.Created($"/api/books/{book.ISBN}", book);
 });
 
+app.MapDelete("/api/books/{isbn}", async (string isbn, IMediator mediator) =>
+{
+    await mediator.Send(new DeleteBookCommand { ISBN = isbn });
+    return Results.NoContent();
+});
+
 // création d'une méthode HEAD
 
 app.UseSwaggerUI();
