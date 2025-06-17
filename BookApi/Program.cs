@@ -1,5 +1,7 @@
 using BookApi.Application.Commands;
+using BookApi.Application.Mappers;
 using BookApi.Application.Queries;
+using BookApi.Application.Requests;
 using BookApi.Infrastructure.Data;
 using BookApi.Infrastructure.Repositories;
 using BookApi.Infrastructure.Repositories.Interfaces;
@@ -46,11 +48,12 @@ app.MapGet("/api/books", async (IMediator mediator) =>
 app.MapGet("/api/books/{isbn}", async (string isbn, IMediator mediator) =>
 {
     var book = await mediator.Send(new GetBookByIsbnQuery { ISBN = isbn });
-    return book is not null ? Results.Ok(book) : Results.NotFound();
+    return book is not null ? Results.Ok(book.ToResponse()) : Results.NotFound();
 });
 
-app.MapPost("/api/books", async (AddBookCommand command, IMediator mediator) =>
+app.MapPost("/api/books", async (AddBookRequest request, IMediator mediator) =>
 {
+    var command = request.ToCommand();
     var book = await mediator.Send(command);
     return Results.Created($"/api/books/{book.ISBN}", book);
 });
